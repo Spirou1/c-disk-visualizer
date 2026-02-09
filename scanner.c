@@ -105,8 +105,6 @@ unsigned long long list(const char *path, DirectoryList *dirlist) {
   return total_bytes;
 }
 
-int print_dir_list() {}
-
 int comp(const void *a, const void *b) {
   DirectoryInfo *dirinfoa = (DirectoryInfo *)a;
   DirectoryInfo *dirinfob = (DirectoryInfo *)b;

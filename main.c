@@ -3,6 +3,7 @@
 
 #include "dir_list.h"
 #include "scanner.h"
+#include "squares.h"
 
 int main(int argc, char **argv) {
 
@@ -19,6 +20,8 @@ int main(int argc, char **argv) {
     printf("DIRECTORY PATH: %s    || SIZE: %.2f GB\n", dirlist.data[i].path,
            (double)dirlist.data[i].bytes / 1024 / 1024 / 1024);
   }
+
+  draw_screen(&dirlist, grand_total);
 
   dir_list_destroy(&dirlist);
   return 0;

@@ -14,14 +14,18 @@
 #include <unistd.h>
 
 #include "dir_list.h"
+#include "scanner.h"
+
+unsigned long long total_bytes;
 
 unsigned long long list(const char *path, DirectoryList *dirlist) {
 
-  unsigned long long total_bytes = 0;
   struct dirent *dent;
   struct stat s;
   DIR *dir;
   char full_path[PATH_MAX];
+
+  unsigned long long before_bytes = total_bytes;
 
   if (strncmp(path, "/proc", 5) == 0 || strncmp(path, "/sys", 4) == 0 ||
       strncmp(path, "/dev", 4) == 0) {
@@ -82,7 +86,7 @@ unsigned long long list(const char *path, DirectoryList *dirlist) {
     if (S_ISLNK(s.st_mode)) {
       total_bytes += s.st_size;
     } else if (S_ISDIR(s.st_mode)) {
-      total_bytes += list(full_path, dirlist);
+      list(full_path, dirlist);
     } else if (S_ISREG(s.st_mode)) {
       total_bytes += s.st_size;
       //      printf("FILENAME: %s -------- SIZE ON DISK:%.2f MB\n",
@@ -94,12 +98,14 @@ unsigned long long list(const char *path, DirectoryList *dirlist) {
 
   DirectoryInfo file_info;
   file_info.path = strdup(path);
-  file_info.bytes = total_bytes;
+  file_info.bytes = total_bytes - before_bytes;
 
   dir_list_push(dirlist, file_info);
 
   return total_bytes;
 }
+
+int print_dir_list() {}
 
 int comp(const void *a, const void *b) {
   DirectoryInfo *dirinfoa = (DirectoryInfo *)a;
@@ -113,26 +119,5 @@ int comp(const void *a, const void *b) {
     return 1;
   }
 
-  return 0;
-}
-
-int main(int argc, char **argv) {
-
-  DirectoryList dirlist = init_dir_list();
-
-  printf("Scanning your disk, please wait...\n");
-  unsigned long long grand_total = list("/home/enzo", &dirlist);
-  printf("\nGRAND TOTAL DISK SIZE: %.2f GB\n",
-         (double)grand_total / 1024 / 1024 / 1024);
-
-  qsort(dirlist.data, dirlist.length, sizeof(DirectoryInfo), comp);
-
-  printf("15 BIGGEST DIRECTORIES LISTED: \n");
-  for (int i = 0; i < 15; i++) {
-    printf("DIRECTORY PATH: %s    || SIZE: %.2f GB\n", dirlist.data[i].path,
-           (double)dirlist.data[i].bytes / 1024 / 1024 / 1024);
-  }
-
-  dir_list_destroy(&dirlist);
   return 0;
 }

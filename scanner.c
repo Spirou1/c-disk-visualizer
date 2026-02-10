@@ -84,11 +84,11 @@ unsigned long long list(const char *path, DirectoryList *dirlist) {
     }
 
     if (S_ISLNK(s.st_mode)) {
-      total_bytes += s.st_size;
+      total_bytes += s.st_blocks * 512;
     } else if (S_ISDIR(s.st_mode)) {
       list(full_path, dirlist);
     } else if (S_ISREG(s.st_mode)) {
-      total_bytes += s.st_size;
+      total_bytes += s.st_blocks * 512;
       //      printf("FILENAME: %s -------- SIZE ON DISK:%.2f MB\n",
       //      dent->d_name,
       //           s.st_size / (1024.0 * 1024.0));
@@ -99,6 +99,10 @@ unsigned long long list(const char *path, DirectoryList *dirlist) {
   DirectoryInfo file_info;
   file_info.path = strdup(path);
   file_info.bytes = total_bytes - before_bytes;
+  file_info.gid = s.st_gid;
+  file_info.uid = s.st_uid;
+  file_info.last_mod = s.st_mtime;
+  file_info.mode = s.st_mode;
 
   dir_list_push(dirlist, file_info);
 

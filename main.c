@@ -17,8 +17,10 @@ int main(int argc, char **argv) {
 
   printf("15 BIGGEST DIRECTORIES LISTED: \n");
   for (int i = 0; i < 15; i++) {
-    printf("DIRECTORY PATH: %s    || SIZE: %.2f GB\n", dirlist.data[i].path,
-           (double)dirlist.data[i].bytes / 1024 / 1024 / 1024);
+    printf("DIRECTORY PATH: %s    || SIZE: %.2f GB || GID: %d\n",
+           dirlist.data[i].path,
+           (double)dirlist.data[i].bytes / 1000 / 1000 / 1000,
+           dirlist.data[i].gid);
   }
 
   draw_screen(&dirlist, grand_total);

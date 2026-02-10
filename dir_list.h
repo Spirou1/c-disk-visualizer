@@ -4,10 +4,15 @@
 #define DIRECTORY_LIST_H
 
 #include <stddef.h>
+#include <sys/types.h>
 
 typedef struct {
   char *path;
   unsigned long long bytes;
+  uid_t uid;
+  gid_t gid;
+  time_t last_mod;
+  mode_t mode;
 } DirectoryInfo;
 
 typedef struct {

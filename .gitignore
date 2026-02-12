@@ -1,4 +1,5 @@
 scanner
+compile_commands.json
 *.exe
 *.out
 *.app
@@ -14,6 +15,7 @@ scanner
 
 .vscode/
 .idea/
+.cache/
 *.swp
 *.swo
 *~

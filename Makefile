@@ -1,6 +1,6 @@
 TARGET = scanner
 CC = gcc
-CFLAGS = -Iincludes -Wall -g
+CFLAGS = -Iincludes -Wall -g -D_GNU_SOURCE
 LDFLAGS = -lncurses
 
 SRC = $(wildcard src/*.c)

@@ -1,5 +1,8 @@
 /* squares.c */
 
+#define _GNU_SOURCE
+
+#include <libgen.h>
 #include <ncurses.h>
 #include <ncurses/curses.h>
 #include <stdio.h>
@@ -7,9 +10,12 @@
 #include <string.h>
 
 #include "dir_list.h"
+#include "dir_logic.h"
 
 #define BLOCKS_NUM 50
 WINDOW *blocks[BLOCKS_NUM];
+
+int dir_logic(DirectoryList *dirlist);
 
 int draw_screen(DirectoryList *dirlist, unsigned long long total) {
 
@@ -24,7 +30,9 @@ int draw_screen(DirectoryList *dirlist, unsigned long long total) {
 
   init_pair(1, COLOR_WHITE, COLOR_BLACK);
   init_pair(2, COLOR_WHITE, COLOR_BLUE);
-  init_pair(3, COLOR_BLACK, COLOR_CYAN);
+  init_pair(3, COLOR_BLACK, COLOR_MAGENTA);
+
+  char *current_path = "/home/enzo";
 
   wbkgd(stdscr, COLOR_PAIR(1));
 
@@ -67,7 +75,9 @@ int draw_screen(DirectoryList *dirlist, unsigned long long total) {
 
   unsigned long long local_sum = 0;
   for (int k = 0; k < BLOCKS_NUM; k++) {
-    local_sum += dirlist->data[k].bytes;
+    if (directory_logic(current_path, dirlist->data[k].path) == 1) {
+      local_sum += dirlist->data[k].bytes;
+    }
   }
   if (local_sum == 0) {
     local_sum = 1;
@@ -76,6 +86,10 @@ int draw_screen(DirectoryList *dirlist, unsigned long long total) {
   for (int i = 0; i < BLOCKS_NUM; i++) {
     double ratio = (double)dirlist->data[i].bytes / local_sum;
     int width = (int)(ratio * (max_x - 4));
+
+    if (directory_logic(current_path, dirlist->data[i].path) == 0) {
+      continue;
+    }
 
     if (width < 10)
       width = 20;

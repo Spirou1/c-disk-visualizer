@@ -1,7 +1,7 @@
 TARGET = scanner
 CC = gcc
 CFLAGS = -Iincludes -Wall -g -D_GNU_SOURCE
-LDFLAGS = -lncurses
+LDFLAGS = -lncurses -lm
 
 SRC = $(wildcard src/*.c)
 OBJ = $(patsubst src/%.c, obj/%.o, $(SRC))

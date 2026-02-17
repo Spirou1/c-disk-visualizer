@@ -3,28 +3,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "dir_list.h"
 #include "scanner.h"
-#include "squares.h"
+#include "tree.h"
 
 int main(int argc, char **argv) {
 
-  DirectoryList dirlist = init_dir_list();
   printf("Scanning your disk, please wait...\n");
 
-  unsigned long long grand_total = list("/home/enzo", &dirlist);
-  printf("\nGRAND TOTAL DISK SIZE: %.2f GB\n",
-         (double)grand_total / 1024 / 1024 / 1024);
-  qsort(dirlist.data, dirlist.length, sizeof(DirectoryInfo), comp);
+  char *path = "/home/enzo";
+  Node *root = scan_dir(path);
+  sort_tree_by_size(root);
 
-  printf("15 BIGGEST DIRECTORIES LISTED: \n");
-  for (int i = 0; i < 15; i++) {
-    printf("DIRECTORY PATH: %s    || SIZE: %.2f GB\n", dirlist.data[i].path,
-           (double)dirlist.data[i].bytes / 1024 / 1024 / 1024);
+  printf("Total scanned: %2.llu GB\n", root->bytes / 1000 / 1000 / 1000);
+
+  printf("15 BIGGEST DIRECTORIES: \n");
+
+  size_t limit = (root->child_count < 15) ? root->child_count : 15;
+
+  for (size_t i = 0; i < limit; i++) {
+    Node *child = root->children[i];
+    printf("DIRECTORY: %s     ||SIZE: %llu GB\n", child->path,
+           child->bytes / 1000 / 1000 / 1000);
   }
 
-  draw_screen(&dirlist, grand_total);
+  free_tree(root);
 
-  dir_list_destroy(&dirlist);
   return 0;
 }

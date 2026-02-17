@@ -1,8 +1,8 @@
 #ifndef SQUARES_H
 #define SQUARES_H
 
-#include "dir_list.h"
+#include "tree.h"
 
-void draw_screen(DirectoryList *dirlist, unsigned long long total);
+void generate_treemap(Node *root, double width, double height);
 
 #endif

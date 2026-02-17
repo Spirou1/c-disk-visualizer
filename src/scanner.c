@@ -13,19 +13,17 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "dir_list.h"
 #include "scanner.h"
+#include "tree.h"
 
-unsigned long long total_bytes;
+Node *scan_dir(const char *path) {
 
-unsigned long long list(const char *path, DirectoryList *dirlist) {
+  Node *current_node = create_node(path);
 
   struct dirent *dent;
   struct stat s;
   DIR *dir;
   char full_path[PATH_MAX];
-
-  unsigned long long before_bytes = total_bytes;
 
   if (strncmp(path, "/proc", 5) == 0 || strncmp(path, "/sys", 4) == 0 ||
       strncmp(path, "/dev", 4) == 0) {
@@ -69,7 +67,7 @@ unsigned long long list(const char *path, DirectoryList *dirlist) {
       break;
     }
     printf("ERROR WHILE OPENING DIRECTORY\n");
-    return 1;
+    return current_node;
   }
 
   while ((dent = readdir(dir)) != NULL) {
@@ -83,43 +81,15 @@ unsigned long long list(const char *path, DirectoryList *dirlist) {
       continue;
     }
 
-    if (S_ISLNK(s.st_mode)) {
-      total_bytes += s.st_blocks * 512;
-    } else if (S_ISDIR(s.st_mode)) {
-      list(full_path, dirlist);
+    if (S_ISDIR(s.st_mode)) {
+      Node *sub_dir = scan_dir(full_path);
+      current_node->bytes += sub_dir->bytes;
+      add_child(current_node, sub_dir);
     } else if (S_ISREG(s.st_mode)) {
-      total_bytes += s.st_blocks * 512;
-      //      printf("FILENAME: %s -------- SIZE ON DISK:%.2f MB\n",
-      //      dent->d_name,
-      //           s.st_size / (1024.0 * 1024.0));
+      current_node->bytes += s.st_blocks * 512;
     }
   }
   closedir(dir);
 
-  DirectoryInfo file_info;
-  file_info.path = strdup(path);
-  file_info.bytes = total_bytes - before_bytes;
-  file_info.gid = s.st_gid;
-  file_info.uid = s.st_uid;
-  file_info.last_mod = s.st_mtime;
-  file_info.mode = s.st_mode;
-
-  dir_list_push(dirlist, file_info);
-
-  return total_bytes;
-}
-
-int comp(const void *a, const void *b) {
-  DirectoryInfo *dirinfoa = (DirectoryInfo *)a;
-  DirectoryInfo *dirinfob = (DirectoryInfo *)b;
-
-  if (dirinfoa->bytes > dirinfob->bytes) {
-    return -1;
-  }
-
-  if (dirinfoa->bytes < dirinfob->bytes) {
-    return 1;
-  }
-
-  return 0;
+  return current_node;
 }

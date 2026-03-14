@@ -8,6 +8,7 @@
 
 typedef struct {
   double x, y, w, h;
+  int index;
 } Rect;
 
 typedef struct Node {

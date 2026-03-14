@@ -1,30 +1,25 @@
-/* main.c  */
-
+/* src/main.c */
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "scanner.h"
+#include "squares.h"
 #include "tree.h"
 
 int main(int argc, char **argv) {
+  char *path = (argc > 1) ? argv[1] : "/home/enzo";
 
-  printf("Scanning your disk, please wait...\n");
+  printf("Scanning %s, please wait...\n", path);
 
-  char *path = "/home/enzo";
   Node *root = scan_dir(path);
+  if (!root) {
+    printf("Erro ao ler o diretório.\n");
+    return 1;
+  }
+
   sort_tree_by_size(root);
 
-  printf("Total scanned: %2.llu GB\n", root->bytes / 1000 / 1000 / 1000);
-
-  printf("15 BIGGEST DIRECTORIES: \n");
-
-  size_t limit = (root->child_count < 15) ? root->child_count : 15;
-
-  for (size_t i = 0; i < limit; i++) {
-    Node *child = root->children[i];
-    printf("DIRECTORY: %s     ||SIZE: %llu GB\n", child->path,
-           child->bytes / 1000 / 1000 / 1000);
-  }
+  draw_treemap(root);
 
   free_tree(root);
 

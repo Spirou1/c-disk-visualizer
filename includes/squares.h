@@ -3,6 +3,6 @@
 
 #include "tree.h"
 
-void generate_treemap(Node *root, double width, double height);
+void draw_treemap(Node *root);
 
 #endif

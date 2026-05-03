@@ -1,1 +1,25 @@
-This is a simple C project that tries to scan your disk and represent the files and directories visually using ncurses...
+# C Disk Scanner
+
+A simple terminal-based disk usage visualizer written in C, using ncurses.
+
+It scans a directory and generates a treemap to help you visualize what is taking up space on your disk.
+
+Still a very experimental project with lots to improve on!
+
+## Demo
+
+![Project Demo](demo.gif)
+
+## Installation
+
+```bash
+make
+```
+
+## Usage
+
+```bash
+./scanner [path]
+```
+
+If no path is provided, it defaults to the home directory.

@@ -8,7 +8,7 @@ Still a very experimental project with lots to improve on!
 
 ## Demo
 
-![Project Demo](demo.gif)
+![Project Demo](https://i.imgur.com/f6EMoNJ.gif)
 
 ## Installation
 
